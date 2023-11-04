@@ -92,6 +92,8 @@ const UploadModal = () => {
       router.refresh();
       setIsLoading(false);
       toast.success('Song uploaded successfully');
+      reset();
+      uploadModal.onClose()
     } catch (error) {
       toast.error('Something went wrong');
     } finally {
