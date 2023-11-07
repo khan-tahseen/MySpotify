@@ -29,7 +29,7 @@ const SongItem: React.FC<SongItemProps> = ({ data, onClick }) => {
         <p className='font-semibold truncate w-full'>{data.title}</p>
         <p className='text-sm text-neutral-400 w-full truncate pb-2'>By {data.author}</p>
       </div>
-      <div className='absolute bottom-24 right-6'>
+      <div className='absolute bottom-24 right-5'>
       <PlayButton />
       </div>
     </div>
