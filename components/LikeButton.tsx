@@ -53,6 +53,10 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
       } else {
         setIsLiked(false);
       }
+    } else {
+      const {error} = await supabaseClient.from('liked_song').insert({
+        
+      })
     }
   };
   return (
