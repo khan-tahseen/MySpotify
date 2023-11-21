@@ -55,7 +55,8 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
       }
     } else {
       const {error} = await supabaseClient.from('liked_song').insert({
-        
+        song_id: songId,
+        user_id: user.id,
       })
     }
   };
