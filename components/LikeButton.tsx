@@ -3,6 +3,7 @@ import { useUser } from '@/hooks/useUser';
 import { useSessionContext } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { AiFillHeart, AiOutlineHeart } from 'react-icons/ai';
 
 interface LikeButtonProps {
@@ -37,7 +38,23 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
 
   const Icon = isLiked ? AiFillHeart : AiOutlineHeart;
 
-  const handleLike = async () => {};
+  const handleLike = async () => {
+    if (!user) return authModal.onOpen();
+
+    if (isLiked) {
+      const { error } = await supabaseClient
+        .from('liked_song')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('song_id', songId);
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setIsLiked(false);
+      }
+    }
+  };
   return (
     <button className="hover:opacity-70 transition" onClick={handleLike}>
       <Icon size={25} color={isLiked ? '#22c55e' : 'white'} />
