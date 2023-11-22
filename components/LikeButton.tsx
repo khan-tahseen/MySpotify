@@ -54,11 +54,20 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
         setIsLiked(false);
       }
     } else {
-      const {error} = await supabaseClient.from('liked_song').insert({
+      const { error } = await supabaseClient.from('liked_song').insert({
         song_id: songId,
         user_id: user.id,
-      })
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setIsLiked(true);
+        toast.success('Liked');
+      }
     }
+
+    router.refresh();
   };
   return (
     <button className="hover:opacity-70 transition" onClick={handleLike}>
