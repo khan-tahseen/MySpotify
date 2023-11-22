@@ -17,14 +17,16 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
   const authModal = useAuthModal();
   const { user } = useUser();
 
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      return;
+    }
 
     const fetchData = async () => {
       const { data, error } = await supabaseClient
-        .from('liked_song')
+        .from('liked_songs')
         .select('*')
         .eq('user_id', user.id)
         .eq('song_id', songId)
@@ -39,11 +41,13 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
   const Icon = isLiked ? AiFillHeart : AiOutlineHeart;
 
   const handleLike = async () => {
-    if (!user) return authModal.onOpen();
+    if (!user) {
+      return authModal.onOpen();
+    }
 
     if (isLiked) {
       const { error } = await supabaseClient
-        .from('liked_song')
+        .from('liked_songs')
         .delete()
         .eq('user_id', user.id)
         .eq('song_id', songId);
@@ -54,7 +58,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ songId }) => {
         setIsLiked(false);
       }
     } else {
-      const { error } = await supabaseClient.from('liked_song').insert({
+      const { error } = await supabaseClient.from('liked_songs').insert({
         song_id: songId,
         user_id: user.id,
       });
