@@ -1,5 +1,6 @@
 'use client';
 
+import MediaItem from '@/components/MediaItem';
 import { useUser } from '@/hooks/useUser';
 import { Song } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -25,7 +26,17 @@ const LikedContent: React.FC<LikedContentProps> = ({ songs }) => {
     );
   }
 
-  return <div className="liked-content">Liked Content</div>;
+  return (
+    <div className="flex flex-col gap-y-2 w-full p-6">
+      {songs.map((song) => (
+        <div key={song.id} className="flex items-center gap-x-4 w-full">
+          <div className="flex-1">
+            <MediaItem data={song} onClick={() => {}} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 export default LikedContent;
