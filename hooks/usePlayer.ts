@@ -31,5 +31,5 @@ const usePlayer = create<PlayerStore>((set) => ({
         });
     },
 }));
-// eslint-disable-next-line import/no-default-export
+
 export default usePlayer;
