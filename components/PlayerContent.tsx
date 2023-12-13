@@ -5,6 +5,8 @@ import { BsPauseFill, BsPlayFill } from 'react-icons/bs';
 import { AiFillStepBackward, AiFillStepForward } from 'react-icons/ai';
 import { HiSpeakerXMark, HiSpeakerWave } from 'react-icons/hi2';
 import Slider from './Slider';
+import usePlayer from '@/hooks/usePlayer';
+import { useState } from 'react';
 
 interface PlayerContentProps {
   song: Song;
@@ -12,9 +14,19 @@ interface PlayerContentProps {
 }
 
 const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
-  const Icon = true ? BsPauseFill : BsPlayFill;
-  const IconColor = true ? 'text-black' : 'text-green-500';
-  const VolumeIcon = true ? HiSpeakerXMark : HiSpeakerWave;
+  const player = usePlayer();
+  const [volume, setVolume] = useState(1);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const Icon = isPlaying ? BsPauseFill : BsPlayFill;
+  const VolumeIcon = volume === 0 ? HiSpeakerXMark : HiSpeakerWave;
+
+  const onPlayNext = () => {
+    if (player.ids.length === 0) return;
+
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const nextSong = player.ids[currentIndex + 1];
+  };
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
@@ -29,7 +41,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
           onClick={() => {}}
           className="h-10 w-10 flex items-center justify-center rounded-full bg-white p-1 cursor-pointer"
         >
-          <Icon size={30} className={`${IconColor}`} />
+          <Icon size={30} className="text-black" />
         </div>
       </div>
       <div className="hidden h-full w-full md:flex items-center justify-center max-w-[722px] gap-x-6">
@@ -39,11 +51,11 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
           className="text-neutral-400 cursor-pointer hover:text-white transition"
         />
         <div className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer">
-          <Icon size={30} className={`${IconColor}`} />
+          <Icon size={30} className="text-black" />
         </div>
         <AiFillStepForward
           size={30}
-          onCilck={() => {}}
+          onClick={() => {}}
           className="text-neutral-400 cursor-pointer hover:text-white transition"
         />
       </div>
