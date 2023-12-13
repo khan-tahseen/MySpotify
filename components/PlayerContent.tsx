@@ -6,7 +6,8 @@ import { AiFillStepBackward, AiFillStepForward } from 'react-icons/ai';
 import { HiSpeakerXMark, HiSpeakerWave } from 'react-icons/hi2';
 import Slider from './Slider';
 import usePlayer from '@/hooks/usePlayer';
-import { useState } from 'react';
+import useSound from 'use-sound';
+import { useEffect, useState } from 'react';
 
 interface PlayerContentProps {
   song: Song;
@@ -47,6 +48,37 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
     player.setId(previousSong);
   };
 
+  const [play, { pause, sound }] = useSound(songUrl, {
+    volume: volume,
+    onplay: () => setIsPlaying(true),
+    onpause: () => setIsPlaying(false),
+    onended: () => {
+      setIsPlaying(false);
+      onPlayNext();
+    },
+    format: ['mp3'],
+  });
+
+  useEffect(() => {
+    sound?.play();
+
+    return () => {
+      sound?.unload();
+    };
+  }, [sound]);
+
+  const handlePlay = () => {
+    if (!isPlaying) {
+      play();
+    } else {
+      pause();
+    }
+  };
+
+  const toggleMute = () => {
+    setVolume(volume === 0 ? 1 : 0);
+  };
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full">
       <div className="flex w-full justify-start">
@@ -70,7 +102,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
           className="text-neutral-400 cursor-pointer hover:text-white transition"
         />
         <div className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer">
-          <Icon size={30} className="text-black" />
+          <Icon size={30} className="text-black" onClick={handlePlay} />
         </div>
         <AiFillStepForward
           size={30}
@@ -80,8 +112,12 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
       </div>
       <div className="hidden md:flex w-full justify-end pr-2">
         <div className="flex items-center gap-x-2 w-[120px]">
-          <VolumeIcon className="cursor-pointer" size={24} onClick={() => {}} />
-          <Slider />
+          <VolumeIcon
+            className="cursor-pointer"
+            size={24}
+            onClick={toggleMute}
+          />
+          <Slider value={volume} onChange={(value) => setVolume(value)} />
         </div>
       </div>
     </div>
