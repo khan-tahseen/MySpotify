@@ -26,6 +26,25 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
 
     const currentIndex = player.ids.findIndex((id) => id === player.activeId);
     const nextSong = player.ids[currentIndex + 1];
+
+    if (!nextSong) {
+      return player.setId(player.ids[0]);
+    }
+
+    player.setId(nextSong);
+  };
+
+  const onPlayPrevious = () => {
+    if (player.ids.length === 0) return;
+
+    const currentIndex = player.ids.findIndex((id) => id === player.activeId);
+    const previousSong = player.ids[currentIndex - 1];
+
+    if (!previousSong) {
+      return player.setId(player.ids[player.ids.length - 1]);
+    }
+
+    player.setId(previousSong);
   };
 
   return (
@@ -47,7 +66,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
       <div className="hidden h-full w-full md:flex items-center justify-center max-w-[722px] gap-x-6">
         <AiFillStepBackward
           size={30}
-          onClick={() => {}}
+          onClick={onPlayPrevious}
           className="text-neutral-400 cursor-pointer hover:text-white transition"
         />
         <div className="flex items-center justify-center h-10 w-10 rounded-full bg-white p-1 cursor-pointer">
@@ -55,7 +74,7 @@ const PlayerContent: React.FC<PlayerContentProps> = ({ song, songUrl }) => {
         </div>
         <AiFillStepForward
           size={30}
-          onClick={() => {}}
+          onClick={onPlayNext}
           className="text-neutral-400 cursor-pointer hover:text-white transition"
         />
       </div>
