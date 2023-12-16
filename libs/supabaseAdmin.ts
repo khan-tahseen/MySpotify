@@ -2,6 +2,7 @@ import { Price, Product } from '@/types';
 import { Database } from '@/types_db';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { stripe } from './stripe';
 
 export const supabaseAdmin = createClient<Database>(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -55,5 +56,34 @@ const createOrRetrieveACustomer = async ({
     .select('stripe_customer_id')
     .eq('id', uuid)
     .single();
-  if (error || data?.stripe_customer_id) throw error;
+
+  if (error || data?.stripe_customer_id) {
+    const customerData: { metadata: { supabaseUUID: string }; email?: string } =
+      {
+        metadata: {
+          supabaseUUID: uuid,
+        },
+      };
+
+    if (email) customerData.email = email;
+
+    const cunstomer = await stripe.customers.create(customerData);
+    const { error: supabaseError } = await supabaseAdmin
+      .from('customers')
+      .insert([
+        {
+          id: uuid,
+          stripe_customer_id: cunstomer.id,
+          metadata: {
+            supabaseUUID: uuid,
+          },
+        },
+      ]);
+
+    if (supabaseError) {
+      throw supabaseError;
+    }
+
+    console.log(`New customer created and inserted for ${uuid}`);
+  }
 };
