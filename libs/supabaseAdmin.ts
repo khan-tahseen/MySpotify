@@ -124,7 +124,20 @@ const manageSubscriptionStatusChange = async (
     .eq('stripe_customer_id', customerId)
     .single();
 
-    if (noCustomerError) throw noCustomerError;
+  if (noCustomerError) throw noCustomerError;
 
-    const {id: uuid} = customerData;
+  const { id: uuid } = customerData;
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+    expand: ['default_payment_method'],
+  });
+
+  const subscriptionData: Database['public']['Tables']['subscriptions']['Insert'] =
+    {
+      id: subscription.id,
+      user_id: uuid,
+      metadata: subscription.metadata,
+      // @ts-ignore
+      status: subscription.status,
+      price_id: subscription.items.data[0].price.id,
+    };
 };
