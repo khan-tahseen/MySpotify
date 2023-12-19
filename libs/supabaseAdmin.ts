@@ -183,3 +183,10 @@ const manageSubscriptionStatusChange = async (
     );
   }
 };
+
+export {
+  upsertProductRecord,
+  upsertPriceRecord,
+  createOrRetrieveACustomer,
+  manageSubscriptionStatusChange,
+};
