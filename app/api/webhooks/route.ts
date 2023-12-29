@@ -70,6 +70,11 @@ export async function POST(request: Request) {
         default:
           throw new Error(`Unhandled event type ${event.type}`);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+      return new NextResponse('Webhook error', { status: 400 });
+    }
   }
+
+  return NextResponse.json({ received: true }, { status: 200 });
 }
