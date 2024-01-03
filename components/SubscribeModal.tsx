@@ -1,11 +1,19 @@
 'use client';
 
-import { ProductWithPrice } from '@/types';
+import { Price, ProductWithPrice } from '@/types';
 import Modal from './Modal';
 
 interface SubscribeModalProps {
   products: ProductWithPrice[];
 }
+
+const formatPrice = (price: Price) => {
+  const priceString = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: price?.currency || 'INR',
+    minimumFractionDigits: 0,
+  }).format((price?.unit_amount || 0) / 100);
+};
 
 const SubscribeModal: React.FC<SubscribeModalProps> = ({ products }) => {
   let content = <div className="text-center">No Products available</div>;
