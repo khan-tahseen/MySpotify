@@ -2,6 +2,9 @@
 
 import { Price, ProductWithPrice } from '@/types';
 import Modal from './Modal';
+import Button from './Button';
+import { useState } from 'react';
+import { useUser } from '@/hooks/useUser';
 
 interface SubscribeModalProps {
   products: ProductWithPrice[];
@@ -13,14 +16,21 @@ const formatPrice = (price: Price) => {
     currency: price?.currency || 'INR',
     minimumFractionDigits: 0,
   }).format((price?.unit_amount || 0) / 100);
+
+  return priceString;
 };
 
 const SubscribeModal: React.FC<SubscribeModalProps> = ({ products }) => {
+  const [priceIdLoading, setPriceIdLoading] = useState<string>();
+  const { user, isLoading, subscription } = useUser();
+
+  const handleCheckout = async (price: Price) => {};
+
   let content = <div className="text-center">No Products available</div>;
 
   if (products?.length) {
     content = (
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div>
         {products.map((product) => {
           if (!product.prices?.length) {
             return (
@@ -33,6 +43,17 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({ products }) => {
               </div>
             );
           }
+
+          return product.prices?.map((price) => (
+            <Button
+              key={price.id}
+              onClick={() => handleCheckout(price)}
+              disabled={isLoading || price.id === priceIdLoading}
+              className="mb-4"
+            >{`Subscribe for ${formatPrice(price)} a ${
+              price.interval
+            }`}</Button>
+          ));
         })}
       </div>
     );
