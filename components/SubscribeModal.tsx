@@ -5,6 +5,9 @@ import Modal from './Modal';
 import Button from './Button';
 import { useState } from 'react';
 import { useUser } from '@/hooks/useUser';
+import toast from 'react-hot-toast';
+import { postData } from '@/libs/helpers';
+import { getStripe } from '@/libs/stripeClient';
 
 interface SubscribeModalProps {
   products: ProductWithPrice[];
@@ -24,7 +27,31 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({ products }) => {
   const [priceIdLoading, setPriceIdLoading] = useState<string>();
   const { user, isLoading, subscription } = useUser();
 
-  const handleCheckout = async (price: Price) => {};
+  const handleCheckout = async (price: Price) => {
+    setPriceIdLoading(price.id);
+
+    if (!user) {
+      setPriceIdLoading(undefined);
+      return toast.error('Must be logged in');
+    }
+
+    if (subscription) {
+      setPriceIdLoading(undefined);
+      return toast.error('Already subscribed');
+    }
+
+    try {
+      const { sessionId } = await postData({
+        url: '/api/create-checkout-session',
+        data: { price },
+      });
+
+      const stripe = await getStripe();
+      stripe?.redirectToCheckout({ sessionId });
+    } catch (error) {
+      toast.error((error as Error)?.message);
+    }
+  };
 
   let content = <div className="text-center">No Products available</div>;
 
