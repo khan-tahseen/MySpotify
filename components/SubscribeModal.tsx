@@ -50,6 +50,8 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({ products }) => {
       stripe?.redirectToCheckout({ sessionId });
     } catch (error) {
       toast.error((error as Error)?.message);
+    } finally {
+      setPriceIdLoading(undefined);
     }
   };
 
@@ -85,6 +87,20 @@ const SubscribeModal: React.FC<SubscribeModalProps> = ({ products }) => {
       </div>
     );
   }
+
+  if (subscription) {
+    content = (
+      <div className="text-center">
+        <p className="text-2xl font-semibold mb-4">
+          You are already subscribed!
+        </p>
+        <p className="text-gray-500">
+          Your subscription will be renewed on {subscription.current_period_end}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <Modal
       title="Only for premium users"
